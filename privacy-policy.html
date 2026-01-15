@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8-bit Player - Privacy Policy</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        :root {
+            --term-green: #64DD17;
+            --term-dim: #33700b;
+            --term-glow: #89fc42;
+            --bg-color: #050505;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        ::selection {
+            background: var(--term-green);
+            color: #000;
+            text-shadow: none;
+        }
+        
+        body {
+            font-family: 'VT323', monospace;
+            font-size: 20px;
+            line-height: 1.5;
+            color: var(--term-green);
+            background-color: var(--bg-color);
+            overflow-x: hidden;
+            height: 100vh;
+            text-shadow: 0 0 2px var(--term-dim), 0 0 8px var(--term-dim);
+        }
+
+        /* --- CRT OVERLAY EFFECTS --- */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 999;
+            background: 
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+                radial-gradient(circle at center, transparent 60%, black 100%);
+            background-size: 100% 4px, 100% 100%;
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+
+        /* --- BOOT SCREEN --- */
+        #boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 1000;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            font-family: 'VT323', monospace;
+            font-size: 24px;
+        }
+
+        .boot-line {
+            display: none; 
+            margin-bottom: 5px;
+        }
+
+        /* --- MAIN LAYOUT --- */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px;
+            padding-bottom: 100px;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .container.loaded {
+            opacity: 1;
+        }
+
+        .terminal-header {
+            border: 2px solid var(--term-green);
+            padding: 20px;
+            margin-bottom: 40px;
+            background-color: rgba(10, 10, 10, 0.8);
+            position: relative;
+            box-shadow: 0 0 15px rgba(100, 221, 23, 0.15);
+        }
+        
+        /* --- FIXED CURSOR STYLING --- */
+        /* This applies the blinking block AFTER the text, not on the text container itself */
+        .typing-cursor::after {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 0.8em;
+            background-color: var(--term-green);
+            animation: blink 1s steps(2) infinite;
+            vertical-align: baseline;
+            margin-left: 4px;
+            margin-bottom: -2px;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        
+        h1 {
+            font-size: 3em;
+            color: var(--term-green);
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            min-height: 1.2em; /* Prevents jump before text loads */
+        }
+        
+        .ascii-logo {
+            font-size: 14px;
+            line-height: 1.1;
+            white-space: pre;
+            margin-bottom: 25px;
+            text-align: center;
+            opacity: 0.8;
+        }
+        
+        h2 {
+            font-size: 2em;
+            margin-top: 50px;
+            margin-bottom: 25px;
+            padding-bottom: 5px;
+            border-bottom: 2px dashed var(--term-dim);
+            text-transform: uppercase;
+        }
+        
+        h2::before { content: '> SYSTEM.LOAD_MODULE: '; opacity: 0.7; font-size: 0.6em; margin-right: 10px; }
+        
+        h3 {
+            font-size: 1.5em;
+            color: var(--term-glow);
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h3::before { content: '>> '; }
+        
+        p { margin-bottom: 15px; color: #e0e0e0; text-shadow: 0 0 2px var(--term-dim); }
+        strong { color: var(--term-green); }
+
+        ul, ol { margin-left: 20px; margin-bottom: 20px; }
+        
+        li {
+            margin-bottom: 8px;
+            padding-left: 10px;
+            transition: all 0.1s;
+            cursor: default;
+        }
+        
+        li:hover {
+            background-color: var(--term-green);
+            color: #000;
+            text-shadow: none;
+        }
+
+        li::marker { content: '▸ '; color: var(--term-green); }
+        li:hover::marker { color: var(--term-green); }
+        
+        .status-box {
+            border: 1px solid var(--term-green);
+            background: rgba(0, 20, 0, 0.3);
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .warning-box {
+            border: 2px solid #FF5555;
+            background: rgba(40, 0, 0, 0.3);
+            padding: 20px;
+            margin: 25px 0;
+            color: #ffbdbd;
+        }
+        .warning-box h3, .warning-box strong, .warning-box .crossmark { color: #FF5555; text-shadow: 0 0 5px #ff5555; }
+
+        .info-box {
+            border: 1px solid #5D9CEC;
+            background: rgba(0, 10, 30, 0.3);
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .info-box h3 { color: #5D9CEC; text-shadow: 0 0 5px #5D9CEC; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            border: 1px solid var(--term-green);
+        }
+        th { background: var(--term-green); color: black; text-shadow: none; padding: 10px; text-align: left;}
+        td { border: 1px solid var(--term-dim); padding: 10px; }
+        tr:hover td { background-color: rgba(100, 221, 23, 0.1); }
+
+        .code-block {
+            background-color: #000;
+            border: 1px solid var(--term-green);
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'VT323', monospace;
+            color: var(--term-green);
+            position: relative;
+        }
+        .code-block::before {
+            content: "EXEC_OUTPUT:";
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background: #000;
+            padding: 0 5px;
+            font-size: 0.8em;
+            color: var(--term-dim);
+        }
+
+        a {
+            color: var(--term-green);
+            text-decoration: underline;
+            transition: 0.2s;
+        }
+        a:hover {
+            background-color: var(--term-green);
+            color: #000;
+            text-decoration: none;
+            text-shadow: none;
+        }
+
+        .pixel-divider {
+            height: 2px;
+            background: repeating-linear-gradient(
+                90deg,
+                var(--term-green) 0px,
+                var(--term-green) 5px,
+                transparent 5px,
+                transparent 10px
+            );
+            margin: 40px 0;
+            opacity: 0.5;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid var(--term-green);
+            text-align: center;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .checkmark { color: var(--term-green); }
+        .crossmark { color: #FF5555; }
+
+        ::-webkit-scrollbar { width: 15px; }
+        ::-webkit-scrollbar-track { background: #000; border-left: 1px solid var(--term-dim); }
+        ::-webkit-scrollbar-thumb { 
+            background: var(--term-green); 
+            border: 2px solid #000; 
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--term-glow); }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 2em; }
+            .ascii-logo { font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="crt-overlay"></div>
+
+    <div id="boot-screen">
+        <div class="boot-line">NAMEKIAN_BIOS (C) 2025</div>
+        <div class="boot-line">CPU: 8-BIT @ 4.77 MHZ</div>
+        <div class="boot-line">MEMORY TEST: 64KB OK</div>
+        <div class="boot-line">DETECTING STORAGE... FOUND</div>
+        <div class="boot-line">LOADING KAMEHAMEHA_CODER KERNEL...</div>
+        <div class="boot-line">MOUNTING /PRIVACY_POLICY...</div>
+        <div class="boot-line">EXECUTION STARTED.</div>
+        <div class="boot-line"><br>_</div>
+    </div>
+
+    <div class="container" id="main-content">
+        <div class="terminal-header">
+            <div class="ascii-logo">
+ ___       _     _ _     ____  _                       
+( _ ) ___ | |__ (_) |_  |  _ \| | __ _ _   _  ___ _ __ 
+/ _ \|___|| '_ \| | __| | |_) | |/ _` | | | |/ _ \ '__|
+| (_) |   | |_) | | |_  |  __/| | (_| | |_| |  __/ |   
+ \___/    |_.__/|_|\__| |_|   |_|\__,_|\__, |\___|_|   
+                                       |___/            
+            </div>
+            <h1 id="typewriter-title" class="typing-cursor"></h1>
+            <div class="date-badge">LAST_UPDATED: 2025-01-15 [v1.0]</div>
+        </div>
+
+        <div class="status-box">
+            <h3>>> SYSTEM_DIAGNOSTICS</h3>
+            <p>
+                [ <span class="checkmark">OK</span> ] DATA_TRANSMISSION: DISABLED<br>
+                [ <span class="checkmark">OK</span> ] TRACKING_SYSTEMS: OFFLINE<br>
+                [ <span class="checkmark">OK</span> ] AD_NETWORK: NOT_FOUND<br>
+                [ <span class="checkmark">OK</span> ] LOCAL_STORAGE: MOUNTED<br>
+                [ <span class="checkmark">OK</span> ] USER_PRIVACY: 100%
+            </p>
+        </div>
+
+        <h2>INIT_PROTOCOL</h2>
+        <p>LOADING 8-BIT PLAYER PRIVACY POLICY...</p>
+        <p>Thank you for using <strong>8-bit Player</strong>. This file explains how we handle your data variables.</p>
+        <p><strong>8-bit Player</strong> is committed to protecting your privacy. This policy describes what data we collect, how we use it, and your rights regarding your information.</p>
+
+        <div class="pixel-divider"></div>
+
+        <h2>DATA_COLLECTION_MODULE</h2>
+
+        <h3>LOCAL_STORAGE_ONLY</h3>
+        <p>8-bit Player is a <strong>LOCAL-ONLY</strong> application. We collect data <strong>ONLY on your physical unit</strong>:</p>
+
+        <h4>AUDIO_FILES</h4>
+        <ul>
+            <li><strong>INPUT:</strong> Audio files (MP3, FLAC, WAV, M4A, OGG, OPUS)</li>
+            <li><strong>PROCESS:</strong> Display library and enable playback</li>
+            <li><strong>LOCATION:</strong> Device storage (READ_ONLY)</li>
+            <li><strong>OUTPUT:</strong> Never transmitted externally</li>
+        </ul>
+
+        <h4>USER_PREFERENCES</h4>
+        <ul>
+            <li><strong>CONFIG:</strong> App settings and customization:
+                <ul>
+                    <li>Color themes (12 variants)</li>
+                    <li>Playback logic (shuffle, repeat, fade)</li>
+                    <li>Audio processing (Equalizer)</li>
+                </ul>
+            </li>
+            <li><strong>STORAGE:</strong> `SharedPreferences` (Local XML)</li>
+            <li><strong>SECURITY:</strong> Private app directory</li>
+        </ul>
+
+        <div class="pixel-divider"></div>
+
+        <h3>PERMISSION_MATRIX</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>PERMISSION_ID</th>
+                    <th>FUNCTION</th>
+                    <th>STATUS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>READ_MEDIA_AUDIO</td>
+                    <td>File Access</td>
+                    <td><span class="checkmark">REQUIRED</span></td>
+                </tr>
+                <tr>
+                    <td>WRITE_EXTERNAL</td>
+                    <td>Tag Editing</td>
+                    <td>OPTIONAL</td>
+                </tr>
+                <tr>
+                    <td>FOREGROUND_SVC</td>
+                    <td>Background Play</td>
+                    <td><span class="checkmark">REQUIRED</span></td>
+                </tr>
+                <tr>
+                    <td>INTERNET</td>
+                    <td>Lyrics Fetch</td>
+                    <td>OPTIONAL*</td>
+                </tr>
+            </tbody>
+        </table>
+        <p><em>*Internet gate only opens if manual lyrics download is requested.</em></p>
+
+        <div class="pixel-divider"></div>
+
+        <h2>NETWORK_STATUS</h2>
+        <div class="warning-box">
+            <h3>WARNING: OFFLINE_MODE_FORCED</h3>
+            <p><strong>WE DO NOT SHARE YOUR DATA.</strong></p>
+            <ul>
+                <li><span class="crossmark">✗</span> SERVER CONNECTION: FAILED (Intentional)</li>
+                <li><span class="crossmark">✗</span> ANALYTICS: NOT DETECTED</li>
+                <li><span class="crossmark">✗</span> ADVERTISEMENTS: BLOCKED</li>
+                <li><span class="crossmark">✗</span> CLOUD SYNC: DISABLED</li>
+                <li><span class="checkmark">✓</span> LOCAL SANDBOX: SECURE</li>
+            </ul>
+        </div>
+
+        <h3>EXCEPTION: LYRICS_FETCHER</h3>
+        <p>If user executes <strong>[DOWNLOAD_LYRICS]</strong>:</p>
+        <ul>
+            <li>Query sent to <strong>LRCLIB.NET</strong> API</li>
+            <li>Payload: Artist Name + Song Title</li>
+            <li>Response: .LRC File written to disk</li>
+            <li>Status: OPTIONAL (User initiated only)</li>
+        </ul>
+
+        <div class="pixel-divider"></div>
+
+        <h2>USER_COMMANDS</h2>
+        <p>You have root access to your data:</p>
+
+        <div class="code-block">
+> DEL /HISTORY       (Settings -> Clear History)
+> DEL /STATS         (Settings -> Clear Stats)
+> DEL /CACHE         (Settings -> Clear Cache)
+> FORMAT C: /APP     (Uninstall Application)
+        </div>
+
+        <div class="pixel-divider"></div>
+
+        <h2>CONTACT_PROTOCOL</h2>
+        <div class="info-box">
+            <h3>DEVELOPER_INFO</h3>
+            <p>
+                <strong>CORP:</strong> NAMEKIAN AFFAIRS, INC.<br>
+                <strong>CHANNEL:</strong> <a href="mailto:songoku16736737@gmail.com.com">songoku16736737@gmail.com.com</a><br>
+                <strong>LATENCY:</strong> < 48 Hours
+            </p>
+        </div>
+
+        <div class="pixel-divider"></div>
+
+        <div class="footer">
+            <p>VER 1.0 | 2025-01-15 | SYSTEM.STATUS: <span class="checkmark">OPERATIONAL</span></p>
+            <p>© 2025 8-bit Player. END OF LINE_</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const bootLines = document.querySelectorAll('.boot-line');
+            const bootScreen = document.getElementById('boot-screen');
+            const mainContent = document.getElementById('main-content');
+            const titleElement = document.getElementById('typewriter-title');
+            const titleText = "PRIVACY_POLICY.TXT";
+            
+            let delay = 0;
+
+            // Boot Sequence
+            bootLines.forEach((line, index) => {
+                delay += Math.random() * 300 + 100;
+                setTimeout(() => {
+                    line.style.display = 'block';
+                    window.scrollTo(0, document.body.scrollHeight);
+                }, delay);
+            });
+
+            // Finish boot
+            setTimeout(() => {
+                bootScreen.style.display = 'none';
+                mainContent.classList.add('loaded');
+                typeWriter(titleElement, titleText);
+            }, delay + 800);
+        });
+
+        function typeWriter(element, text) {
+            let i = 0;
+            element.textContent = "";
+            // The cursor is now handled by CSS ::after on the 'typing-cursor' class
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, 100);
+                }
+            }
+            type();
+        }
+    </script>
+</body>
+</html>
